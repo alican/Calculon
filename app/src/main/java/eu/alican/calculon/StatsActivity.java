@@ -1,5 +1,6 @@
 package eu.alican.calculon;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,19 +17,25 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import com.db4o.ObjectSet;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import eu.alican.calculon.db.DB4OProvider;
+import eu.alican.calculon.db.Db4OGenericDao;
 import eu.alican.calculon.db.DbHelper;
 import eu.alican.calculon.generator.Answer;
+import eu.alican.calculon.generator.AnswerDao;
 
 public class StatsActivity extends AppCompatActivity {
 
     List<Answer> answers = new ArrayList<>();
-    DbHelper dbHelper;
+    DB4OProvider db4OProvider;
     TextView statsTextView;
     ArrayAdapter adapter;
+    Db4OGenericDao db4OGenericDao;
 
     ListView listView;
     @Override
@@ -36,11 +43,13 @@ public class StatsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stats);
 
-        dbHelper = DbHelper.getInstance(this);
+        db4OProvider = DB4OProvider.getInstance(this);
+        final Context context = this;
 
 
         //answers = getIntent().getParcelableArrayListExtra("answer_list");
-        answers = dbHelper.getAllAnswers();
+        AnswerDao dao = new AnswerDao(context);
+        answers = dao.query(Answer.class);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         statsTextView = (TextView) findViewById(R.id.stats);
@@ -56,8 +65,11 @@ public class StatsActivity extends AppCompatActivity {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                dbHelper.deleteAnswerById(answers.get(position).getId());
-                answers.remove(position);
+               // dbHelper.deleteAnswerById(answers.get(position).getId());
+                AnswerDao dao = new AnswerDao(context);
+
+                dao.delete(answers.get(position));
+
                 adapter.notifyDataSetChanged();
                 calcStats();
                 return true;
@@ -69,7 +81,7 @@ public class StatsActivity extends AppCompatActivity {
 
 
     void fetchData(){
-        answers = dbHelper.getAllAnswers();
+        answers = db4OProvider.findAll();
         adapter.notifyDataSetChanged();
         calcStats();
     }
@@ -118,7 +130,7 @@ public class StatsActivity extends AppCompatActivity {
                 return true;
             case R.id.delete_all:
 
-                dbHelper.deleteAllAnswers();
+               // dbHelper.deleteAllAnswers();
                 adapter.clear();
                 fetchData();
                 break;

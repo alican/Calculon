@@ -1,6 +1,8 @@
 package eu.alican.calculon;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,8 +17,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import eu.alican.calculon.db.DB4OProvider;
 import eu.alican.calculon.db.DbHelper;
 import eu.alican.calculon.generator.Answer;
+import eu.alican.calculon.generator.AnswerDao;
 import eu.alican.calculon.generator.CalcObject;
 import eu.alican.calculon.generator.Generator;
 
@@ -28,7 +32,9 @@ public class MainActivity extends AppCompatActivity {
     CalcObject calcObject;
 
     EditText answerBox;
-    DbHelper dbHelper;
+    DB4OProvider db4OProvider;
+
+    Context context;
 
 
     @Override
@@ -39,8 +45,9 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.getBackground().setAlpha(0);
 
+        context = this;
 
-        dbHelper = DbHelper.getInstance(this);
+        db4OProvider = DB4OProvider.getInstance(context);
 
 
         calcLabel = (TextView) findViewById(R.id.textView);
@@ -62,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
         calcLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dbHelper.addAnswer(new Answer(calcObject.toString(), 0, calcObject.getResult(), false, true ));
+                Answer answer = new Answer(calcObject.toString(), 0, calcObject.getResult(), false, true );
+                new SaveObjectOnDb4o(context).execute(answer, null, null);
                 generate();
             }
         });
@@ -90,11 +98,9 @@ public class MainActivity extends AppCompatActivity {
 
             Answer answer = new Answer(calcObject.toString(), answerInt, calcObject.getResult(), isCorrect, false );
             //answers.add(answer);
-            dbHelper.addAnswer(answer);
+            new SaveObjectOnDb4o(context).execute(answer, null, null);
             generate();
         }
-
-
     }
 
     @Override
@@ -126,5 +132,35 @@ public class MainActivity extends AppCompatActivity {
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    public class SaveObjectOnDb4o extends AsyncTask<Answer, Void, Void> {
+
+        public SaveObjectOnDb4o(Context mContext) {
+
+        }
+
+        @Override
+        protected Void doInBackground(Answer... answers) {
+            try {
+                AnswerDao dao = new AnswerDao(context);
+                dao.store(answers[0]);
+
+                dao.close();
+                String str = "Storing object: success";
+                //mListStr.add(str);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+            super.onPostExecute(v);
+            // mListAdapter.notifyDataSetChanged();
+        }
     }
 }
