@@ -129,8 +129,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -148,12 +146,9 @@ public class MainActivity extends AppCompatActivity {
                 dao.store(answers[0]);
 
                 dao.close();
-                String str = "Storing object: success";
-                //mListStr.add(str);
             } catch (Throwable e) {
                 e.printStackTrace();
             }
-
             return null;
         }
 

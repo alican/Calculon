@@ -29,7 +29,7 @@ public abstract class Db4OGenericDao<T> {
     private static ObjectContainer oc = null;
     private Context context;
 
-    private String DB_NAME = "db_temp_2_";
+    private String DB_NAME = "db_";
 
     /**
      * @param context
@@ -38,9 +38,7 @@ public abstract class Db4OGenericDao<T> {
         this.context = context;
     }
 
-    /**
-     * Create, open and close the database
-     */
+
     protected ObjectContainer db() {
 
         if (oc == null || oc.ext().isClosed()) {
@@ -61,9 +59,7 @@ public abstract class Db4OGenericDao<T> {
             return oc;
     }
 
-    /**
-     * Configure the behavior of the database
-     */
+
 
     private EmbeddedConfiguration dbConfig() throws IOException {
         EmbeddedConfiguration configuration = Db4oEmbedded.newConfiguration();
@@ -71,9 +67,6 @@ public abstract class Db4OGenericDao<T> {
         return configuration;
     }
 
-    /**
-     * Returns the path for the database location
-     */
 
     private String db4oDBFullPath(Context ctx) {
         return ctx.getDir("data", 0) + "/" + DB_NAME + ".DB4O";

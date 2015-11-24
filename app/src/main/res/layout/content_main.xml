@@ -34,7 +34,7 @@
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/i"
-        android:layout_marginTop="65dp"
+        android:layout_marginTop="37dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/result"
@@ -42,11 +42,12 @@
         android:layout_alignParentStart="true">
 
     <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:inputType="numberSigned"
         android:singleLine="true"
         android:hint="Lösung"
+
         android:numeric="signed"
         android:ems="10"
         android:id="@+id/answer_box"
@@ -55,17 +56,15 @@
     </android.support.design.widget.TextInputLayout>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Eingabe"
         android:id="@+id/enter"
         android:background="@drawable/button"
         android:elevation="0dp"
         android:padding="10dp"
-        android:layout_alignTop="@+id/i"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignBottom="@+id/i" />
+        android:layout_below="@+id/i"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>
